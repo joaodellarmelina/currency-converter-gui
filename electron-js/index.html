@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Moedas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 400px;
+            margin-top: 50px;
+        }
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Conversor de Moedas</h2>
+        <div class="mb-3">
+            <label for="moedaEntrada" class="form-label">Moeda de Entrada:</label>
+            <select id="moedaEntrada" class="form-select">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="BRL">BRL</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="moedaSaida" class="form-label">Moeda de Saída:</label>
+            <select id="moedaSaida" class="form-select">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="BRL">BRL</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="quantidade" class="form-label">Quantidade:</label>
+            <input type="number" id="quantidade" class="form-control">
+        </div>
+        <button class="btn btn-primary w-100" onclick="converter()">Converter</button>
+    </div>
+    
+    <div class="modal fade" id="resultadoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Resultado da Conversão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function converter() {
+            const moedaEntrada = document.getElementById("moedaEntrada").value;
+            const moedaSaida = document.getElementById("moedaSaida").value;
+            const quantidade = parseFloat(document.getElementById("quantidade").value);
+            const api_Key = None; // Insira sua chave de API aqui
+            
+            if (isNaN(quantidade) || quantidade <= 0) {
+                alert("Por favor, insira um valor válido.");
+                return;
+            }
+            const url = `https://api.freecurrencyapi.com/v1/latest?apikey=${api_Key}&currencies=&base_currency=${moedaEntrada}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.data[moedaSaida]) {
+                    const convertido = quantidade * data.data[moedaSaida];
+                    document.getElementById("modalBody").innerHTML = `O valor convertido é: <strong>${convertido.toFixed(2)} ${moedaSaida}</strong>`;
+                    new bootstrap.Modal(document.getElementById('resultadoModal')).show();
+                } else {
+                    alert("Erro ao obter taxa de câmbio.");
+                }
+            } catch (error) {
+                alert("Erro ao acessar a API de câmbio.");
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
